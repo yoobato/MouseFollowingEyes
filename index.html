@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>test</title>
+
+    <style type="text/css">
+        body {
+            margin: 0;
+            text-align: center;
+        }
+
+        .eye_container {
+            margin-top: 20px;
+        }
+
+        .eye_bg {
+            display: inline-block;
+            width: 256px;
+            height: 256px;
+            overflow: hidden;
+            background-image: url('eye_bg.png');
+        }
+
+        .eye {
+            position: relative;
+            background-image: url('eye.png');
+            width: 60px;
+            height: 60px;
+        }
+
+        .eye_smile {
+            display: none;
+        }
+
+        .button {
+            width: 100px;
+            height: 50px;
+        }
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            $('.button').hover(function () {
+                $('.eye_smile').show();
+                $('.eye').hide();
+            }, function () {
+                $('.eye_smile').hide();
+                $('.eye').show();
+            });
+
+            addEye("#eye1");
+            addEye("#eye2");
+        });
+
+        function addEye(pupil) {
+            var eyeContainer = $(pupil).parent();
+            var posx = eyeContainer.position().left;
+            var posy = eyeContainer.position().top;
+
+            var r = $(pupil).width() / 2;
+            var center = {
+                x: eyeContainer.width() / 2 - r,
+                y: eyeContainer.height() / 2 - r
+            };
+            var distanceThreshold = eyeContainer.width() / 2 - r;
+            var mouseX = center.x;
+            var mouseY = center.y;
+
+            $(window).mousemove(function(e) {
+                var d = {
+                    x: e.pageX - r - posx - center.x,
+                    y: e.pageY - r - posy - center.y
+                };
+
+                var distance = Math.sqrt(d.x * d.x + d.y * d.y);
+                if (distance < distanceThreshold) {
+                    mouseX = e.pageX - posx - r;
+                    mouseY = e.pageY - posy - r;
+                } else {
+                    mouseX = d.x / distance * distanceThreshold + center.x;
+                    mouseY = d.y / distance * distanceThreshold + center.y;
+                }
+            });
+
+            var pupil = $(pupil);
+            var xp = center.x;
+            var yp = center.y;
+
+            var loop = setInterval(function() {
+                xp += mouseX - xp;
+                yp += mouseY - yp;
+                pupil.css({left:xp, top:yp});
+            }, 1);
+        };
+    </script>
+</head>
+<body>
+    <div class="eye_container">
+        <div class="eye_bg">
+            <div id="eye1" class="eye"></div>
+            <img class="eye_smile" src="eye_smile.png" />
+        </div><div class="eye_bg">
+            <div id="eye2" class="eye"></div>
+            <img class="eye_smile" src="eye_smile.png" />
+        </div>
+    </div>
+
+    <div style="margin-top: 30px;">
+        <button class="button">Smile!</button>
+    </div>
+</body>
+</html>
